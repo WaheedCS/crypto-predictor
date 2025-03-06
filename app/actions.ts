@@ -5,6 +5,7 @@ import {
   exitFrequencyCallResponse,
   filterCriteria,
   RefinedCurrencies,
+  ResultType,
   riskAnalyzerAICallResponse,
 } from "@/lib/types";
 import axios from "axios";
@@ -78,7 +79,7 @@ export async function RiskAnalysis(data: filterCriteria) {
     volume,
     diversification: data.diversification,
     depositAmount: data.amount,
-  };
+  } as ResultType;
 }
 
 async function getAllCurrenciesCall(min: number, max: number) {

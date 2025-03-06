@@ -21,15 +21,16 @@ import { ResultType } from "@/lib/types";
 import InvestmentPieChart from "./InvestmentPieChart";
 
 export default function FormComponent() {
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<ResultType | null>(null);
+
+  const [result, formAction, isPending] = useActionState(
+    (_: unknown, formData: FormData) => handleFormSubmit(formData),
+    null
+  );
 
   async function handleFormSubmit(formData: FormData) {
-    setIsLoading(true);
     setError(null);
     try {
-      console.log(formData);
       const risk = formData.get("risk");
       const amount = formData.get("amount");
       const exit = formData.get("exit");
@@ -37,7 +38,6 @@ export default function FormComponent() {
       const minPrice = formData.get("min-price");
       const maxPrice = formData.get("max-price");
 
-      // Process the form data (e.g., save to database)
       console.log({
         risk,
         amount,
@@ -56,13 +56,11 @@ export default function FormComponent() {
       });
       console.log(result);
 
-      setResults(result);
+      return result;
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "An unexpected error occurred"
       );
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -78,12 +76,12 @@ export default function FormComponent() {
             to provide you with a diversified and optimized portfolio.
           </CardDescription>
         </CardHeader>
-        <form action={handleFormSubmit}>
+        <form action={formAction}>
           <CardContent className="space-y-6 mb-4">
             <div className="space-y-3">
               <Label htmlFor="name">
                 Deposit Amount{" "}
-                <TooltipComponent hoverText="Enter Amount to Invest <b>(Just for Visualization, Amount will not be deducted)</b>" />
+                <TooltipComponent hoverText="Enter Amount to Invest<br/><b>(Just for Visualization, Amount will not be deducted)</b>" />
               </Label>
               <Input
                 id="amount"
@@ -194,7 +192,12 @@ export default function FormComponent() {
                 </span>
               </div>
               {/* Hidden inputs to store the values for form submission */}
-              <input type="hidden" name="min-price" id="min-price" value="10000" />
+              <input
+                type="hidden"
+                name="min-price"
+                id="min-price"
+                value="10000"
+              />
               <input
                 type="hidden"
                 name="max-price"
@@ -232,16 +235,9 @@ export default function FormComponent() {
             </div>
           </CardContent>
 
-          {isLoading && (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Fetching...
-            </>
-          )}
-
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Fetching...
@@ -264,7 +260,7 @@ export default function FormComponent() {
       )}
 
       {/* No Results Message */}
-      {results && results.currencies?.length === 0 && (
+      {result && result?.currencies?.length === 0 && (
         <Card className="w-full max-w-md mx-auto">
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
@@ -275,18 +271,18 @@ export default function FormComponent() {
       )}
 
       {/* Results Card */}
-      {results && results.currencies?.length > 0 && (
+      {result && result?.currencies?.length > 0 && (
         <>
           <Card className="w-full max-w-md mx-auto">
             <CardHeader>
               <CardTitle>Filtered Coins</CardTitle>
               <CardDescription>
-                Found {results.currencies?.length} coins matching your criteria
+                Found {result?.currencies?.length} coins matching your criteria
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="divide-y">
-                {results.currencies?.map((product) => (
+                {result?.currencies?.map((product) => (
                   <li key={product.id} className="py-3">
                     <div className="flex justify-between">
                       <div>
@@ -309,7 +305,7 @@ export default function FormComponent() {
               </ul>
             </CardContent>
           </Card>
-          <InvestmentPieChart investmentData={results} />
+          <InvestmentPieChart investmentData={result} />
           <div id="error-holder"></div>
           <div>
             <iframe
