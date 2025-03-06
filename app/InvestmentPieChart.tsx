@@ -62,6 +62,7 @@ export default function InvestmentPieChart({
               <Pie
                 data={percentageData?.map((i) => ({
                   percentage: parseFloat(i.percentage),
+                  name: i.name + " (" + i.symbol + ")"
                 }))}
                 innerRadius={70}
                 outerRadius={100}
@@ -71,7 +72,7 @@ export default function InvestmentPieChart({
                 // label={({ symbol, percentage }) => `${symbol}: ${percentage}`}
               >
                 {percentageData.map((entry, index: number) => (
-                  <Cell key={`cell-${index}`} fill={colors[index]} />
+                  <Cell key={`cell-${index}`} fill={colors[index % 20]} />
                 ))}
               </Pie>
               <Tooltip
