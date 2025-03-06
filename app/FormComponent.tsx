@@ -1,24 +1,23 @@
 "use client";
-import { CardFooter } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { TooltipComponent } from "@/components/ui/tooltip";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Slider } from "@/components/ui/slider";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardDescription, CardFooter, CardHeader,
+  CardTitle
 } from "@/components/ui/card";
-import { useState, useActionState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
+import { TooltipComponent } from "@/components/ui/tooltip";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useActionState, useState } from "react";
 import { RiskAnalysis } from "./actions";
-import { ResultType } from "@/lib/types";
 import InvestmentPieChart from "./InvestmentPieChart";
+import ResultCard from "./ResutsCard";
+import PredictionChart from "./PredictionChart";
 
 export default function FormComponent() {
   const [error, setError] = useState<string | null>(null);
@@ -273,54 +272,11 @@ export default function FormComponent() {
       {/* Results Card */}
       {result && result?.currencies?.length > 0 && (
         <>
-          <Card className="w-full max-w-md mx-auto">
-            <CardHeader>
-              <CardTitle>Filtered Coins</CardTitle>
-              <CardDescription>
-                Found {result?.currencies?.length} coins matching your criteria
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="divide-y">
-                {result?.currencies?.map((product) => (
-                  <li key={product.id} className="py-3">
-                    <div className="flex justify-between">
-                      <div>
-                        <h3 className="font-medium">
-                          {product.name} ({product.symbol})
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {product.slug}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">${product.price}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Average Volume: {product.avgVolume}
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          <ResultCard result={result} />
           <InvestmentPieChart investmentData={result} />
-          <div id="error-holder"></div>
-          <div>
-            <iframe
-              onError={() => {
-                const holder = document.getElementById("error-holder");
-                if (holder) {
-                  holder.innerHTML = "<b>Unable to load Prediction Chart</b>";
-                }
-              }}
-              src="http://localhost:8000/static/forecast_BNBUSDT.html"
-              className="w-full h-screen"
-            ></iframe>
-          </div>
         </>
       )}
+      <PredictionChart />
     </div>
   );
 }

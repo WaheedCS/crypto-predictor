@@ -75,15 +75,7 @@ export type exitFrequencyCallResponse = {
       avgVolume: number;
     };
   };
-  historicalData: {
-    today: number;
-    before30Days: number;
-    before60Days: number;
-    before90Days: number;
-    before120Days: number;
-    before150Days: number;
-    before180Days: number;
-  };
+  historicalData: HistoricalDataType;
 }[];
 
 export type RefinedCurrencies = {
@@ -99,15 +91,7 @@ export type CurrenciesType = {
   volatility: number;
   growth: number;
   avgVolume: number;
-  historicalData: {
-      today: number;
-      before30Days: number;
-      before60Days: number;
-      before90Days: number;
-      before120Days: number;
-      before150Days: number;
-      before180Days: number;
-  };
+  historicalData: HistoricalDataType;
   id?: number;
   name?: string;
   price?: number;
@@ -138,15 +122,7 @@ export type assignPercentagesResponse = {
   symbol?: string;
   volatility: number;
   volume_24h?: number;
-  historicalData: {
-    today: number;
-    before30Days: number;
-    before60Days: number;
-    before90Days: number;
-    before120Days: number;
-    before150Days: number;
-    before180Days: number;
-  };
+  historicalData: HistoricalDataType;
 }[];
 
 export type percentageChangeCallResponse = {
@@ -154,3 +130,13 @@ export type percentageChangeCallResponse = {
   predicted_price: number;
   predicted_percentage_change: number;
 }[];
+
+export type HistoricalDataType = {
+  today: number;
+  before30Days: number;
+  before60Days: number;
+  before90Days: number;
+  before120Days: number;
+  before150Days: number;
+  before180Days: number;
+}

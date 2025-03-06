@@ -3,6 +3,15 @@ import { ResultType } from "@/lib/types";
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { assignPercentages } from "./chart-actions";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const colors = [
   "#FF5733", // Vibrant Red
@@ -32,16 +41,6 @@ export default function InvestmentPieChart({
 }: {
   investmentData: ResultType;
 }) {
-  //   const percentageData = investmentData?.map((i) =>
-  //      assignPercentages(
-  //       i.currencies,
-  //       i.risk,
-  //       i.volume,
-  //       i.diversification,
-  //       i.depositAmount
-  //     )
-  //   );
-
   const percentageData = assignPercentages(
     investmentData.currencies,
     investmentData.risk,
@@ -62,16 +61,17 @@ export default function InvestmentPieChart({
               <Pie
                 data={percentageData?.map((i) => ({
                   percentage: parseFloat(i.percentage),
-                  name: i.name + " (" + i.symbol + ")"
+                  name: i.name,
+                  symbol: i.symbol
                 }))}
                 innerRadius={70}
                 outerRadius={100}
                 fill="#8884d8"
                 paddingAngle={1}
                 dataKey="percentage"
-                // label={({ symbol, percentage }) => `${symbol}: ${percentage}`}
+                label={({ symbol, percentage }) => `${symbol}: ${percentage}%`}
               >
-                {percentageData.map((entry, index: number) => (
+                {percentageData.map((_, index: number) => (
                   <Cell key={`cell-${index}`} fill={colors[index % 20]} />
                 ))}
               </Pie>
@@ -82,32 +82,35 @@ export default function InvestmentPieChart({
           </ResponsiveContainer>
         </div>
         <div className="max-lg:w-full lg:w-1/2 mx-auto flex justify-center">
-          <table className="border-collapse border border-gray-300 w-full max-w-md">
-            <thead>
-              <tr className="text-left">
-                <th className="border border-gray-300 p-2">Currency</th>
-                <th className="border border-gray-300 p-2">Similarity</th>
-                <th className="border border-gray-300 p-2">Share</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableCaption>
+              The List of Coins with proposed share of investments.
+            </TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Currency</TableHead>
+                <TableHead>Similarity</TableHead>
+                <TableHead>Share</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {percentageData
                 .sort((a, b) => Number(b.percentage) - Number(a.percentage))
                 .map((item) => (
-                  <tr key={item.id}>
-                    <td className="border border-gray-300 p-2">
+                  <TableRow key={item.id}>
+                    <TableCell className="border border-gray-300 p-2">
                       {item.symbol}
-                    </td>
-                    <td className="border border-gray-300 p-2">
+                    </TableCell>
+                    <TableCell className="border border-gray-300 p-2">
                       {item.percentage}%
-                    </td>
-                    <td className="border border-gray-300 p-2">
+                    </TableCell>
+                    <TableCell className="border border-gray-300 p-2">
                       ${Math.round(item.price * 100) / 100}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>
