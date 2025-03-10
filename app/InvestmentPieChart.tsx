@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
 
 const colors = [
   "#FF5733", // Vibrant Red
@@ -62,7 +63,7 @@ export default function InvestmentPieChart({
                 data={percentageData?.map((i) => ({
                   percentage: parseFloat(i.percentage),
                   name: i.name,
-                  symbol: i.symbol
+                  symbol: i.symbol,
                 }))}
                 innerRadius={70}
                 outerRadius={100}
@@ -81,16 +82,16 @@ export default function InvestmentPieChart({
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="max-lg:w-full lg:w-1/2 mx-auto flex justify-center">
+        <Card className="max-lg:w-full lg:w-1/2 mx-auto flex justify-center px-4">
           <Table>
-            <TableCaption>
+            <TableCaption className="hidden">
               The List of Coins with proposed share of investments.
             </TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead>Currency</TableHead>
-                <TableHead>Similarity</TableHead>
-                <TableHead>Share</TableHead>
+                <TableHead>Symbol</TableHead>
+                <TableHead>Investment Share</TableHead>
+                <TableHead>Amount</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -111,7 +112,7 @@ export default function InvestmentPieChart({
                 ))}
             </TableBody>
           </Table>
-        </div>
+        </Card>
       </div>
     </div>
   );
