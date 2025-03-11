@@ -18,7 +18,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { Suspense, useActionState, useState } from "react";
 import { RiskAnalysis } from "./actions";
 import InvestmentPieChart from "./InvestmentPieChart";
-import ResultCard from "./ResutsCard";
+import ResultCard from "./ResultsCard";
 import PredictionChart from "./PredictionChart";
 import { NewsCard } from "./NewsCard";
 
