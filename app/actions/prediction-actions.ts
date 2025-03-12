@@ -23,12 +23,21 @@ export async function callPrediction(symbol: string) {
 export async function fetchPrediction(symbol: string) {
   console.log("calling prediction api");
   const { data } = await axios.get(PREDICTION_URL + "/forecast/" + symbol);
-  if (data.error){
-    throw Error("Unable to generate prediction")
+  if (data.error) {
+    throw Error("Unable to generate prediction");
   }
   await put(symbol + ".txt", JSON.stringify(data), {
     access: "public",
     contentType: "text/plain",
   });
   return data as PriceData;
+}
+
+export async function fetchPreviousPredictionsList() {
+  const { blobs } = await list();
+  console.log("blob ", blobs?.map((o)=>o.pathname?.replace('.txt', '')));
+  const previousPredictions = blobs?.map(
+    (i) => i.pathname?.replace('.txt', '') || ""
+  );
+  return previousPredictions;
 }

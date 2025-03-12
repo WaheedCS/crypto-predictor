@@ -17,7 +17,10 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";
-import { callPrediction } from "./actions/prediction-actions";
+import {
+  callPrediction,
+  fetchPreviousPredictionsList,
+} from "./actions/prediction-actions";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Legend } from "recharts";
 import {
   ChartContainer,
@@ -26,14 +29,23 @@ import {
 } from "@/components/ui/chart";
 import { PriceData } from "@/lib/types";
 
-const CURRENCIES = ["BTC-USD", "BNB-USD", "DOGE-USD", "SOL-USD"];
+// const CURRENCIES = ["BTC-USD", "BNB-USD", "DOGE-USD", "SOL-USD"];
 
 export default function PredictionChart() {
-  const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES?.at(0));
+  const [currencies, setCurrencies] = useState(["BTC-USD"]);
+  const [selectedCurrency, setSelectedCurrency] = useState(currencies?.at(0));
 
   const [priceData, setPriceData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function get() {
+      const result = await fetchPreviousPredictionsList();
+      setCurrencies(result);
+    }
+    get();
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -79,7 +91,7 @@ export default function PredictionChart() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Currencies</SelectLabel>
-                {CURRENCIES?.map((currency, index) => (
+                {currencies?.map((currency, index) => (
                   <SelectItem key={index} value={currency}>
                     {currency}
                   </SelectItem>
