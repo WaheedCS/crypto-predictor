@@ -1,6 +1,7 @@
 "use server";
 import { put, list } from "@vercel/blob";
 import axios from "axios";
+import { PriceData } from "@/lib/types";
 
 const PREDICTION_URL = "http://127.0.0.1:8000";
 
@@ -10,7 +11,9 @@ export async function callPrediction(symbol: string) {
   const previousPrediction = blobs.find((b) => b.pathname.includes(symbol));
   if (previousPrediction) {
     console.log("found previous prediction for this symbol");
-    return previousPrediction;
+    const response = await fetch(previousPrediction.downloadUrl);
+    const content = await response.text();
+    return JSON.parse(content);
   }
 
   const prediction = await fetchPrediction(symbol);
@@ -20,9 +23,12 @@ export async function callPrediction(symbol: string) {
 export async function fetchPrediction(symbol: string) {
   console.log("calling prediction api");
   const { data } = await axios.get(PREDICTION_URL + "/forecast/" + symbol);
-  const result = await put(symbol, JSON.stringify(data), {
+  if (data.error){
+    throw Error("Unable to generate prediction")
+  }
+  await put(symbol + ".txt", JSON.stringify(data), {
     access: "public",
     contentType: "text/plain",
   });
-  return result;
+  return data as PriceData;
 }

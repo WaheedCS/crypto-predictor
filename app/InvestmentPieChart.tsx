@@ -2,7 +2,7 @@
 import { ResultType } from "@/lib/types";
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { assignPercentages } from "./chart-actions";
+import { assignPercentages } from "./actions/chart-actions";
 import {
   Table,
   TableBody,

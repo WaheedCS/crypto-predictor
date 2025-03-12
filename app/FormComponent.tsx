@@ -16,11 +16,12 @@ import { Slider } from "@/components/ui/slider";
 import { TooltipComponent } from "@/components/ui/tooltip";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Suspense, useActionState, useState } from "react";
-import { RiskAnalysis } from "./actions";
+import { RiskAnalysis } from "./actions/actions";
 import InvestmentPieChart from "./InvestmentPieChart";
 import ResultCard from "./ResultsCard";
 import PredictionChart from "./PredictionChart";
 import { NewsCard } from "./NewsCard";
+import { callPrediction } from "./actions/prediction-actions";
 
 export default function FormComponent() {
   const [error, setError] = useState<string | null>(null);

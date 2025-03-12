@@ -99,7 +99,7 @@ export type CurrenciesType = {
   symbol?: string;
   volume_24h?: number;
   Risk_Value?: number | undefined;
-}
+};
 
 export type ResultType = {
   currencies: CurrenciesType[];
@@ -107,7 +107,7 @@ export type ResultType = {
   volume: number;
   diversification: number;
   depositAmount: number;
-}
+};
 
 export type assignPercentagesResponse = {
   Risk_Value?: number;
@@ -139,4 +139,11 @@ export type HistoricalDataType = {
   before120Days: number;
   before150Days: number;
   before180Days: number;
+};
+
+export interface PriceData {
+  symbol: string;
+  predictedAt: string;
+  historical: Record<string, number>;
+  prediction: Record<string, number>;
 }

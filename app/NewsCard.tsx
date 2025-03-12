@@ -11,7 +11,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
-import { getNews } from "@/app/crypto-panic-action";
+import { getNews } from "@/app/actions/crypto-panic-action";
 import { NewsResponse } from "@/lib/crypto-panic";
 
 export async function NewsCard() {
