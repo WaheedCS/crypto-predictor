@@ -160,7 +160,7 @@ async function riskAnalyzerAICall(
 
   const randomValue = Math.random();
 
-  const found_symbols = symbols?.slice(0, 20).map((i) => ({
+  const found_symbols = symbols?.slice(0, 50).map((i) => ({
     Risk_Level:
     Math.random() > 0.7 ? "high" : Math.random() > 0.3 ? "medium" : "low",
     Risk_Value: randomValue,
