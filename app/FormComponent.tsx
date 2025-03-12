@@ -326,7 +326,7 @@ export default function FormComponent() {
               <NewsCard />
             </Suspense> */}
           </div>
-          <ResultCard result={result} />
+          {/* <ResultCard result={result} /> */}
           <ChatBot result={result} />
         </>
       )}
