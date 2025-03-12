@@ -22,6 +22,7 @@ import { ResultType } from "@/lib/types";
 import { assignPercentages } from "./actions/chart-actions";
 import { colors } from "@/components/colors";
 import { ChatBot } from "@/components/ChatBot";
+import { TooltipComponent } from "@/components/ui/tooltip";
 
 export default function MainComponent() {
   const [error, setError] = useState<string | null>(null);
@@ -133,8 +134,9 @@ export default function MainComponent() {
           <form action={formAction}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className="block text-sm font-medium mb-3 text-opacity-80">
-                  Risk Level
+                <label className="block text-sm font-medium mb-3 text-opacity-80 flex items-center gap-2">
+                  Risk Level{" "}
+                  <TooltipComponent hoverText="Risk Level of Crypto Coins to Invest" />
                 </label>
                 <div className="flex gap-3">
                   {["low", "medium", "high"].map((level) => (
@@ -168,8 +170,9 @@ export default function MainComponent() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-3 text-opacity-80">
-                  Exit Frequency
+                <label className="block text-sm font-medium mb-3 text-opacity-80 flex items-center gap-2">
+                  Exit Frequency{" "}
+                  <TooltipComponent hoverText="How often you want to take profit from your investment" />
                 </label>
                 <div className="flex gap-3">
                   {["early", "regular", "late"].map((freq) => (
@@ -210,9 +213,10 @@ export default function MainComponent() {
                 <div className="flex justify-between items-center mb-2">
                   <label
                     htmlFor="range"
-                    className="block text-sm font-medium text-opacity-80"
+                    className="block text-sm font-medium text-opacity-80 flex items-center gap-2"
                   >
-                    Diversification
+                    Diversification{" "}
+                    <TooltipComponent hoverText="How many crypto coins to invest in" />
                   </label>
                   <span
                     className={`text-sm font-semibold px-2 py-1 rounded-full ${"bg-indigo-100 text-indigo-700"}`}
@@ -237,8 +241,9 @@ export default function MainComponent() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-opacity-80">
-                    Daily Trading Volume
+                  <label className="block text-sm font-medium text-opacity-80 flex items-center gap-2">
+                    Daily Trading Volume{" "}
+                    <TooltipComponent hoverText="Select range for crypto coins with trading volume" />
                   </label>
                   <span
                     className={`text-sm font-semibold px-2 py-1 rounded-full ${"bg-indigo-100 text-indigo-700"}`}
@@ -272,9 +277,10 @@ export default function MainComponent() {
               <div>
                 <label
                   htmlFor="number"
-                  className="block text-sm font-medium mb-1 text-opacity-80"
+                  className="block text-sm font-medium mb-1 text-opacity-80 flex items-center gap-2"
                 >
-                  Investment Amount
+                  Investment Amount{" "}
+                  <TooltipComponent hoverText="Enter Amount to Invest<br/><b>(Just for Visualization, Amount will not be deducted)</b>" />
                 </label>
                 <div className="flex rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
                   <div
