@@ -110,7 +110,7 @@ export function ChatBot({ result }: { result: ResultType }) {
   }, [messages, isOpen])
 
   return (
-    <div className="fixed bottom-4 left-4 z-50">
+    <div className="fixed bottom-4 right-4 z-50">
       {/* Chat toggle button */}
       <Button onClick={toggleChat} className="h-12 w-12 rounded-full shadow-lg" aria-label="Toggle chat">
         <MessageCircle className="h-6 w-6" />
@@ -118,7 +118,7 @@ export function ChatBot({ result }: { result: ResultType }) {
 
       {/* Chat popup */}
       {isOpen && (
-        <Card className="absolute bottom-16 left-0 w-80 sm:w-96 shadow-xl">
+        <Card className="absolute bottom-16 right-0 w-80 sm:w-96 shadow-xl">
           <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
             <CardTitle className="text-lg">Chat Support</CardTitle>
             <Button variant="ghost" size="icon" onClick={toggleChat} aria-label="Close chat">
