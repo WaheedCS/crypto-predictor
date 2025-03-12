@@ -12,7 +12,7 @@ import { Line, LineChart, Tooltip } from "recharts";
 
 export default function ResultCard({ result }: { result: ResultType }) {
   return (
-    <Card className="w-full max-w-xl mx-auto">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Filtered Coins</CardTitle>
         <CardDescription>
@@ -32,14 +32,15 @@ export default function ResultCard({ result }: { result: ResultType }) {
                     {product.slug}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="font-medium">${product.price}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Average Volume: {product.avgVolume}
-                  </p>
+                <div className="flex flex-row gap-4 max-md:flex-col">
+                  <div className="text-right">
+                    <p className="font-medium">${product.price}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Average Volume: {product.avgVolume}
+                    </p>
+                  </div>
+                  <HistoricalChart data={product.historicalData} />
                 </div>
-                <div></div>
-                <HistoricalChart data={product.historicalData} />
               </div>
             </li>
           ))}
