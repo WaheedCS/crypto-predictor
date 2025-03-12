@@ -337,9 +337,6 @@ export default function MainComponent() {
             <InvestmentPieChart investmentData={result} />
           </div> */}
           <ResultSection result={result} />
-          <ResultCard result={result} />
-          <ChatBot result={result} />
-          <PredictionChart />
         </>
       )}
 
@@ -478,6 +475,8 @@ function ResultSection({ result }: { result: ResultType }) {
   const sortedData = percentageData?.sort(
     (a, b) => Number(b.percentage) - Number(a.percentage)
   );
+
+  console.log("soreted ", sortedData);
   return (
     <>
       <div className={`rounded-xl ${"bg-white"} shadow-xl overflow-hidden`}>
@@ -633,6 +632,9 @@ function ResultSection({ result }: { result: ResultType }) {
           </div>
         </div>
       </div>
+      <ResultCard result={sortedData} />
+      <ChatBot result={result} />
+      <PredictionChart />
     </>
   );
 }

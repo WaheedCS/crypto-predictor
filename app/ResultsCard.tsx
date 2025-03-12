@@ -7,44 +7,119 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { HistoricalDataType, ResultType } from "@/lib/types";
+import {
+  assignPercentagesResponse,
+  HistoricalDataType,
+  ResultType,
+} from "@/lib/types";
 import { Line, LineChart, Tooltip } from "recharts";
 
-export default function ResultCard({ result }: { result: ResultType }) {
+export default function ResultCard({
+  result,
+}: {
+  result: assignPercentagesResponse;
+}) {
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Filtered Coins</CardTitle>
         <CardDescription>
-          Found {result?.currencies?.length} coins matching your criteria
+          Found {result?.length} coins matching your criteria
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="divide-y">
-          {result?.currencies?.map((product) => (
-            <li key={product.id} className="py-3">
-              <div className="flex justify-between">
-                <div>
-                  <h3 className="font-medium">
-                    {product.name} ({product.symbol})
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {product.slug}
-                  </p>
-                </div>
-                <div className="flex flex-row gap-4 max-md:flex-col">
+        <table
+          className={`min-w-full divide-y divide-opacity-10 ${"divide-gray-200"} `}
+        >
+          <thead className={"bg-gray-50/80"}>
+            <tr>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-opacity-70"
+              >
+                Symbol
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-opacity-70"
+              >
+                Price & Volume
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-opacity-70 max-md:hidden"
+              >
+                Price History
+              </th>
+              {/* <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-opacity-70"
+                      >
+                        Trend
+                      </th> */}
+            </tr>
+          </thead>
+          <tbody
+            className={`divide-y divide-opacity-10 ${"divide-gray-200"} overflow-scroll`}
+          >
+            {result?.map((product, index) => (
+              <tr
+                key={index}
+                className={`hover:bg-opacity-50 ${"hover:bg-gray-50"}`}
+              >
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="flex items-center">
+                    <div className={`rounded-full`}>
+                      <h3 className="font-medium">
+                        {product.name} ({product.symbol})
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {product.slug}
+                      </p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <div className="text-right">
                     <p className="font-medium">${product.price}</p>
                     <p className="text-sm text-muted-foreground">
                       Average Volume: {product.avgVolume}
                     </p>
                   </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm max-md:hidden">
                   <HistoricalChart data={product.historicalData} />
+                </td>
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                        {getTrendIcon(row.trend)}
+                                      </td> */}
+              </tr>
+            ))}
+            {/* <tr key={product.id} className="py-3">
+                <div className="flex justify-between">
+                  <div>
+                    <h3 className="font-medium">
+                      {product.name} ({product.symbol})
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {product.slug}
+                    </p>
+                  </div>
+                  <div className="flex flex-row gap-4 max-md:flex-col">
+                    <div className="text-right">
+                      <p className="font-medium">${product.price}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Average Volume: {product.avgVolume}
+                      </p>
+                    </div>
+                    <div className="w-full max-w-lg">
+                      <HistoricalChart data={product.historicalData} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </tr> */}
+          </tbody>
+        </table>
       </CardContent>
     </Card>
   );
@@ -62,7 +137,7 @@ function HistoricalChart({ data }: { data: HistoricalDataType }) {
   ];
 
   return (
-    <LineChart width={100} height={50} data={formattedData} dataKey="value">
+    <LineChart width={200} height={100} data={formattedData} dataKey="value">
       <Tooltip
         labelFormatter={(_, payload) => `${payload?.at(0)?.payload?.name}`}
       />
