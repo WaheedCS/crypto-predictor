@@ -22,6 +22,7 @@ import ResultCard from "./ResultsCard";
 import PredictionChart from "./PredictionChart";
 import { NewsCard } from "./NewsCard";
 import { callPrediction } from "./actions/prediction-actions";
+import { ChatBot } from "@/components/ChatBot";
 
 export default function FormComponent() {
   const [error, setError] = useState<string | null>(null);
@@ -326,7 +327,7 @@ export default function FormComponent() {
             </Suspense> */}
           </div>
           <ResultCard result={result} />
-          <PredictionChart />
+          <ChatBot result={result} />
         </>
       )}
     </div>
