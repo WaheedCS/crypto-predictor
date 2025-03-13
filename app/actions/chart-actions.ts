@@ -27,7 +27,10 @@ export function assignPercentages(
 
   const scores = selectedObjects.map((item) => {
     const riskScore = closenessScore(item.Risk_Value as number, risk);
-    const volumeScore = closenessScore(Number(item.volume_24h), volume);
+    const volumeScore = closenessScore(
+      Number((item as any).quote.USD.volume_24h),
+      volume
+    );
     const similarityScore = 1 / (riskScore + volumeScore);
     return { ...item, similarityScore };
   });
