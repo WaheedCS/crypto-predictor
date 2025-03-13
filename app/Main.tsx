@@ -24,15 +24,6 @@ export default function MainComponent() {
   const [result, setResult] = useState<ResultType | null>(null);
 
   async function handleFormSubmit(e: InputFormType) {
-    console.log(e);
-
-    console.log(
-      e.riskLevel,
-      e.exitFrequency,
-      e.rangeValue,
-      e.minMaxRange,
-      e.amount,
-    );
 
     setError(null);
     setLoading(true);
@@ -52,7 +43,6 @@ export default function MainComponent() {
         minPrice: Number(minPrice),
         risk: risk as string,
       });
-      console.log("result ", result);
 
       setResult(result);
     } catch (err) {
