@@ -80,9 +80,11 @@ export default function ResultCard({
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <div className="text-right">
-                    <p className="font-medium">${product.price}</p>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="text-balance">
+                    <p className="font-medium">
+                      ${product.historicalData.today}
+                    </p>
+                    <p className="text-muted-foreground text-xs font-extralight">
                       Average Volume: {product.avgVolume}
                     </p>
                   </div>
