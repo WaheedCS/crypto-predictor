@@ -35,9 +35,11 @@ export async function fetchPrediction(symbol: string) {
 
 export async function fetchPreviousPredictionsList() {
   const { blobs } = await list();
-  console.log("blob ", blobs?.map((o)=>o.pathname?.replace('.txt', '')));
-  const previousPredictions = blobs?.map(
-    (i) => i.pathname?.replace('.txt', '') || ""
-  );
+  const previousPredictions = blobs?.map((i) => ({
+    name: i.pathname?.replace(".html", "")?.replace("forecast_", "") || "",
+    url: i.downloadUrl,
+    path: i.url
+  }));
+  console.log("blob found ", previousPredictions);
   return previousPredictions;
 }
