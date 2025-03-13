@@ -8,14 +8,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input"
 import { MessageCircle, Send, X, Loader2 } from "lucide-react"
 import { ResultType } from "@/lib/types"
+import { askChatBot } from "@/app/actions/chat-bot-actions"
 
 interface Message {
   id: string
   content: string
   role: "user" | "assistant"
 }
-
-const apiEndpoint = "/api/chat";
 
 export function ChatBot({ result }: { result: ResultType }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -57,32 +56,14 @@ export function ChatBot({ result }: { result: ResultType }) {
     setError(null)
 
     try {
-      // Send message to your backend endpoint
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map((msg) => ({
-            content: msg.content,
-            role: msg.role,
-          })),
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`)
-      }
-
-      const data = await response.json()
+      const data = await askChatBot(input);
 
       // Add assistant response to chat
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
-          content: data.message || data.content || data.text || "I received your message.",
+          content: data.response || data.message || data.content || data.text || "I received your message.",
           role: "assistant",
         },
       ])
