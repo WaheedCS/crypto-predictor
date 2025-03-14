@@ -7,8 +7,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatPrice } from "@/lib/format-price";
 import { assignPercentagesResponse, HistoricalDataType } from "@/lib/types";
-import { Line, LineChart, Tooltip } from "recharts";
+import { ChartLine, Link2 } from "lucide-react";
+import { useState } from "react";
+import {
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "./ui/dialog";
 
 export default function ResultCard({
   result,
@@ -78,15 +94,22 @@ export default function ResultCard({
                 <td className="px-3 py-4 whitespace-nowrap text-sm">
                   <div className="text-balance">
                     <p className="font-medium">
-                      ${(product as any).quote.USD.price?.toString()}
+                      $
+                      {parseFloat(
+                        (product as any).quote.USD.price?.toString(),
+                      ).toFixed(8)}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Average Volume: {product.avgVolume}
+                      Average Volume: $
+                      {formatPrice(product.avgVolume?.toLocaleString())}
                     </p>
                   </div>
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap text-sm max-md:hidden">
-                  <HistoricalChart data={product.historicalData} />
+                  <HistoricalChart
+                    data={product.historicalData}
+                    slug={product.slug}
+                  />
                 </td>
                 {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {getTrendIcon(row.trend)}
@@ -123,7 +146,14 @@ export default function ResultCard({
   );
 }
 
-function HistoricalChart({ data }: { data: HistoricalDataType }) {
+function HistoricalChart({
+  data,
+  slug,
+}: {
+  data: HistoricalDataType;
+  slug?: string;
+}) {
+  const [open, setOpen] = useState(false);
   const formattedData = [
     // { name: "180d", value: data.before180Days || 0 },
     // { name: "150d", value: data.before150Days || 0 },
@@ -139,17 +169,64 @@ function HistoricalChart({ data }: { data: HistoricalDataType }) {
 
   return (
     <>
-      {/* <ResponsiveContainer width='100%' height='100%'> */}
-      <LineChart width={200} height={100} data={formattedData} dataKey="value">
-        <Tooltip
-          labelFormatter={(_, payload) => `${payload?.at(0)?.payload?.name}`}
-          position={{ x: 100, y: 100 }}
-        />
-        <Line type="monotone" dataKey="value" stroke="#8884d8" dot={false} />
-        {/* <XAxis dataKey="name" scale="log" domain={['auto', 'auto']} />
-      <YAxis dataKey="value" /> */}
-      </LineChart>
-      {/* </ResponsiveContainer> */}
+      <button onClick={() => setOpen(!open)}>
+        <ChartLine className="size-4" />
+      </button>
+      <Dialog open={open} onOpenChange={() => setOpen(false)}>
+        <DialogContent>
+          <DialogTitle>Historical Price Chart</DialogTitle>
+          {slug && (
+            <DialogDescription className="flex gap-1">
+              View Full History on{" "}
+              <a
+                target="_blank"
+                href={`https://coinmarketcap.com/currencies/${slug}/`}
+                className="flex items-center gap-1 text-blue-400 hover:underline"
+              >
+                CoinMarketCap <Link2 className="w-4 h-4" />
+              </a>
+            </DialogDescription>
+          )}
+          <div className="w-full h-full">
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart
+                // width={200}
+                // height={100}
+                data={formattedData}
+                // dataKey="value"
+              >
+                <Tooltip
+                  labelFormatter={(_, payload) =>
+                    `${payload?.at(0)?.payload?.name}`
+                  }
+                  // position={{ x: 100, y: 100 }}
+                />
+
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8884d8"
+                  dot={false}
+                />
+                <XAxis
+                  dataKey="name"
+                  scale="point"
+                  // label={{
+                  //   value: "Time",
+                  //   position: "insideBottom",
+                  //   offset: -5,
+                  // }}
+                  // domain={["auto", "auto"]}
+                />
+                <YAxis
+                // scale="log"
+                // dataKey="value"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

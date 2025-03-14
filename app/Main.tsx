@@ -60,7 +60,7 @@ export default function MainComponent() {
 
       {/* Visualization Section */}
       {error && (
-        <Alert variant="destructive" className="w-full max-w-md mx-auto">
+        <Alert variant="destructive" className="w-full">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
