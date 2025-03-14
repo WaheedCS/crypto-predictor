@@ -102,6 +102,8 @@ function InputForm({
   const [amount, setAmount] = useState(0);
   const [riskLevel, setRiskLevel] = useState("medium");
   const [exitFrequency, setExitFrequency] = useState("regular");
+
+  const [error, setError] = useState(false);
   return (
     <div className={`rounded-xl bg-white shadow-xl overflow-hidden`}>
       <div className="p-6">
@@ -111,7 +113,12 @@ function InputForm({
         </h2>
         <form
           onSubmit={(e) => {
+            setError(false);
             e.preventDefault();
+            if (!amount || amount < 1) {
+              setError(true);
+              return;
+            }
             formAction({
               amount,
               exitFrequency,
@@ -280,7 +287,8 @@ function InputForm({
                 <input
                   id="number"
                   type="number"
-                  value={amount}
+                  min={1}
+                  value={amount || ""}
                   onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
                   className={`w-full px-4 py-3 bg-gray-50 focus:outline-none`}
                 />
@@ -302,6 +310,11 @@ function InputForm({
               </button>
             </div>
           </div>
+          {error && (
+            <div className="text-red-500">
+              Please select a valid Investment Amount
+            </div>
+          )}
         </form>
       </div>
     </div>
