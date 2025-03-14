@@ -38,8 +38,11 @@ export async function fetchPreviousPredictionsList() {
   const previousPredictions = blobs?.map((i) => ({
     name: i.pathname?.replace(".html", "")?.replace("forecast_", "") || "",
     url: i.downloadUrl,
-    path: i.url
+    path: i.url,
   }));
-  console.log("blob found ", previousPredictions);
+  console.log(
+    "blobs found: ",
+    previousPredictions?.map((i) => i.name),
+  );
   return previousPredictions;
 }
