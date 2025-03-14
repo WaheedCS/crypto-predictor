@@ -1,10 +1,10 @@
 "use client";
-import { Bell, Loader2 } from "lucide-react";
 import { getNews } from "@/app/actions/crypto-panic-action";
-import { formatDistanceToNow } from "date-fns";
-import Link from "next/link";
-import { useState, useEffect } from "react";
 import { NewsItem } from "@/lib/crypto-panic";
+import { formatDistanceToNow } from "date-fns";
+import { Bell, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function NewsFeed() {
   const [news, setNews] = useState<NewsItem[] | null>(null);

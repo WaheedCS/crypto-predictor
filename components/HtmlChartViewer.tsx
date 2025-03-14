@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface HtmlBlobViewerProps {
   url: string;
@@ -30,7 +30,7 @@ export default function HtmlChartViewer({
 
         if (!response.ok) {
           throw new Error(
-            `Failed to fetch HTML content: ${response.status} ${response.statusText}`
+            `Failed to fetch HTML content: ${response.status} ${response.statusText}`,
           );
         }
 
@@ -45,7 +45,7 @@ export default function HtmlChartViewer({
       } catch (err) {
         console.error("Error fetching HTML content:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load HTML content"
+          err instanceof Error ? err.message : "Failed to load HTML content",
         );
       } finally {
         setIsLoading(false);

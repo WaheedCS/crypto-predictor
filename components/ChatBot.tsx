@@ -1,59 +1,65 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { MessageCircle, Send, X, Loader2 } from "lucide-react"
-import { ResultType } from "@/lib/types"
-import { askChatBot } from "@/app/actions/chat-bot-actions"
+import { askChatBot } from "@/app/actions/chat-bot-actions";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ResultType } from "@/lib/types";
+import { Loader2, MessageCircle, Send, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface Message {
-  id: string
-  content: string
-  role: "user" | "assistant"
+  id: string;
+  content: string;
+  role: "user" | "assistant";
 }
 
 export function ChatBot({ result }: { result: ResultType }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
       content: "Hello! How can I help you today?",
       role: "assistant",
     },
-  ])
-  const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const toggleChat = () => {
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value)
-  }
+    setInput(e.target.value);
+  };
 
   const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!input.trim()) return
+    if (!input.trim()) return;
 
     // Add user message to chat
     const userMessage: Message = {
       id: Date.now().toString(),
       content: input.trim(),
       role: "user",
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-    setIsLoading(true)
-    setError(null)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
+    setError(null);
 
     try {
       const data = await askChatBot(input);
@@ -63,37 +69,48 @@ export function ChatBot({ result }: { result: ResultType }) {
         ...prev,
         {
           id: (Date.now() + 1).toString(),
-          content: data.response || data.message || data.content || data.text || "I received your message.",
+          content:
+            data.response ||
+            data.message ||
+            data.content ||
+            data.text ||
+            "I received your message.",
           role: "assistant",
         },
-      ])
+      ]);
     } catch (err) {
-      console.error("Failed to send message:", err)
-      setError("Failed to send message. Please try again.")
+      console.error("Failed to send message:", err);
+      setError("Failed to send message. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const retryLastMessage = () => {
-    const lastUserMessage = [...messages].reverse().find((msg) => msg.role === "user")
+    const lastUserMessage = [...messages]
+      .reverse()
+      .find((msg) => msg.role === "user");
     if (lastUserMessage) {
-      setInput(lastUserMessage.content)
-      setError(null)
+      setInput(lastUserMessage.content);
+      setError(null);
     }
-  }
+  };
 
   // Auto-scroll to the bottom when new messages arrive
   useEffect(() => {
     if (messagesEndRef.current && isOpen) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, isOpen])
+  }, [messages, isOpen]);
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {/* Chat toggle button */}
-      <Button onClick={toggleChat} className="h-12 w-12 rounded-full shadow-lg" aria-label="Toggle chat">
+      <Button
+        onClick={toggleChat}
+        className="h-12 w-12 rounded-full shadow-lg"
+        aria-label="Toggle chat"
+      >
         <MessageCircle className="h-6 w-6" />
       </Button>
 
@@ -102,7 +119,12 @@ export function ChatBot({ result }: { result: ResultType }) {
         <Card className="absolute bottom-16 right-0 w-80 sm:w-96 shadow-xl">
           <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
             <CardTitle className="text-lg">Chat Support</CardTitle>
-            <Button variant="ghost" size="icon" onClick={toggleChat} aria-label="Close chat">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleChat}
+              aria-label="Close chat"
+            >
               <X className="h-5 w-5" />
             </Button>
           </CardHeader>
@@ -110,10 +132,15 @@ export function ChatBot({ result }: { result: ResultType }) {
           <CardContent className="p-4 h-80 overflow-y-auto">
             <div className="flex flex-col space-y-4">
               {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div
+                  key={message.id}
+                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                >
                   <div
                     className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                      message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted"
                     }`}
                   >
                     {message.content}
@@ -134,7 +161,12 @@ export function ChatBot({ result }: { result: ResultType }) {
                 <div className="flex justify-center">
                   <div className="rounded-lg px-4 py-2 bg-destructive text-accent-foreground text-sm flex items-center space-x-2">
                     <span>{error}</span>
-                    <Button variant="ghost" size="sm" onClick={retryLastMessage} className="h-auto p-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={retryLastMessage}
+                      className="h-auto p-1"
+                    >
                       Retry
                     </Button>
                   </div>
@@ -154,7 +186,12 @@ export function ChatBot({ result }: { result: ResultType }) {
                 className="flex-1"
                 disabled={isLoading}
               />
-              <Button type="submit" size="icon" disabled={isLoading || !input.trim()} aria-label="Send message">
+              <Button
+                type="submit"
+                size="icon"
+                disabled={isLoading || !input.trim()}
+                aria-label="Send message"
+              >
                 <Send className="h-4 w-4" />
               </Button>
             </form>
@@ -162,6 +199,5 @@ export function ChatBot({ result }: { result: ResultType }) {
         </Card>
       )}
     </div>
-  )
+  );
 }
-

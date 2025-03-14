@@ -1,4 +1,6 @@
 "use client";
+import { fetchPreviousPredictionsList } from "@/app/actions/prediction-actions";
+import HtmlChartViewer from "@/components/HtmlChartViewer";
 import {
   Card,
   CardContent,
@@ -6,6 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   Select,
   SelectContent,
@@ -15,28 +22,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PriceData } from "@/lib/types";
 import { Label } from "@radix-ui/react-label";
-import { useEffect, useRef, useState } from "react";
-import {
-  callPrediction,
-  fetchPreviousPredictionsList,
-} from "./actions/prediction-actions";
+import { useEffect, useState } from "react";
 import {
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
   XAxis,
   YAxis,
-  Legend,
-  ResponsiveContainer,
 } from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { PriceData } from "@/lib/types";
-import HtmlChartViewer from "@/components/HtmlChartViewer";
 
 // const CURRENCIES = ["BTC-USD", "BNB-USD", "DOGE-USD", "SOL-USD"];
 

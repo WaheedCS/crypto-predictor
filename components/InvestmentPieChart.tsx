@@ -1,8 +1,5 @@
 "use client";
-import { ResultType } from "@/lib/types";
-import React from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { assignPercentages } from "./actions/chart-actions";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -12,8 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
 import { colors } from "@/lib/colors";
+import { ResultType } from "@/lib/types";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { assignPercentages } from "../app/actions/chart-actions";
 
 export default function InvestmentPieChart({
   investmentData,

@@ -3,12 +3,12 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { AlertCircle, Grid, Loader2 } from "lucide-react";
-import { FormEvent, useActionState, useState } from "react";
+import { useState } from "react";
 
 import { RiskAnalysis } from "@/app/actions/actions";
 import { TooltipComponent } from "@/components/ui/tooltip";
-import { ResultSection } from "./ResultSection";
 import { ResultType } from "@/lib/types";
+import { ResultSection } from "../components/ResultSection";
 
 interface InputFormType {
   riskLevel: string;
@@ -24,7 +24,6 @@ export default function MainComponent() {
   const [result, setResult] = useState<ResultType | null>(null);
 
   async function handleFormSubmit(e: InputFormType) {
-
     setError(null);
     setLoading(true);
     try {

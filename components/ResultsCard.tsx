@@ -7,19 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  assignPercentagesResponse,
-  HistoricalDataType,
-  ResultType,
-} from "@/lib/types";
-import {
-  Line,
-  LineChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-} from "recharts";
+import { assignPercentagesResponse, HistoricalDataType } from "@/lib/types";
+import { Line, LineChart, Tooltip } from "recharts";
 
 export default function ResultCard({
   result,
@@ -88,7 +77,9 @@ export default function ResultCard({
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap text-sm">
                   <div className="text-balance">
-                    <p className="font-medium">${(product as any).quote.USD.price?.toString()}</p>
+                    <p className="font-medium">
+                      ${(product as any).quote.USD.price?.toString()}
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       Average Volume: {product.avgVolume}
                     </p>
@@ -148,17 +139,17 @@ function HistoricalChart({ data }: { data: HistoricalDataType }) {
 
   return (
     <>
-    {/* <ResponsiveContainer width='100%' height='100%'> */}
+      {/* <ResponsiveContainer width='100%' height='100%'> */}
       <LineChart width={200} height={100} data={formattedData} dataKey="value">
         <Tooltip
           labelFormatter={(_, payload) => `${payload?.at(0)?.payload?.name}`}
           position={{ x: 100, y: 100 }}
-          />
+        />
         <Line type="monotone" dataKey="value" stroke="#8884d8" dot={false} />
         {/* <XAxis dataKey="name" scale="log" domain={['auto', 'auto']} />
       <YAxis dataKey="value" /> */}
       </LineChart>
-    {/* </ResponsiveContainer> */}
-      </>
+      {/* </ResponsiveContainer> */}
+    </>
   );
 }

@@ -9,13 +9,12 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-
+import { assignPercentages } from "@/app/actions/chart-actions";
 import { ChatBot } from "@/components/ChatBot";
+import PredictionChart from "@/components/PredictionChart";
+import ResultCard from "@/components/ResultsCard";
 import { colors } from "@/lib/colors";
 import { ResultType } from "@/lib/types";
-import { assignPercentages } from "./actions/chart-actions";
-import PredictionChart from "./PredictionChart";
-import ResultCard from "./ResultsCard";
 
 export function ResultSection({ result }: { result: ResultType }) {
   console.log("result section ", result);
