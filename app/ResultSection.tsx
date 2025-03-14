@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 import { ChatBot } from "@/components/ChatBot";
-import { colors } from "@/components/colors";
+import { colors } from "@/lib/colors";
 import { ResultType } from "@/lib/types";
 import { assignPercentages } from "./actions/chart-actions";
 import PredictionChart from "./PredictionChart";
@@ -25,7 +25,7 @@ export function ResultSection({ result }: { result: ResultType }) {
     result.risk,
     result.volume,
     result.diversification,
-    result.depositAmount
+    result.depositAmount,
   );
 
   if (!result) {
@@ -33,7 +33,7 @@ export function ResultSection({ result }: { result: ResultType }) {
   }
 
   const sortedData = percentageData?.sort(
-    (a, b) => Number(b.percentage) - Number(a.percentage)
+    (a, b) => Number(b.percentage) - Number(a.percentage),
   );
 
   console.log("soreted ", sortedData);

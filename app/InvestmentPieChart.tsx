@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { colors } from "@/components/colors";
+import { colors } from "@/lib/colors";
 
 export default function InvestmentPieChart({
   investmentData,
@@ -25,7 +25,7 @@ export default function InvestmentPieChart({
     investmentData.risk,
     investmentData.volume,
     investmentData.diversification,
-    investmentData.depositAmount
+    investmentData.depositAmount,
   );
 
   return (
