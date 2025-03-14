@@ -1,4 +1,3 @@
-"use client";
 import MainComponent from "@/app/Main";
 import NewsFeed from "@/app/NewsFeed";
 

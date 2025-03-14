@@ -13,7 +13,7 @@ interface HtmlBlobViewerProps {
 export default function HtmlChartViewer({
   url,
   width = "100%",
-  height = "500px",
+  height = "100%",
   className = "",
 }: HtmlBlobViewerProps) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
@@ -89,8 +89,7 @@ export default function HtmlChartViewer({
   return (
     <iframe
       src={blobUrl || "about:blank"}
-      className={`border rounded-md ${className}`}
-      style={{ width, height }}
+      className={`${className} w-full h-full min-h-[850px]`}
       sandbox="allow-scripts allow-same-origin"
       title="HTML Content"
     />
