@@ -102,7 +102,7 @@ export default function PredictionChart() {
                 <SelectLabel>Currencies</SelectLabel>
                 {currencies?.map((currency, index) => (
                   <SelectItem key={index} value={currency?.name}>
-                    {currency?.name}
+                    {currency?.name?.replace("USDT", "")}
                   </SelectItem>
                 ))}
               </SelectGroup>
