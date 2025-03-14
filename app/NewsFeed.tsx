@@ -79,9 +79,9 @@ export default function NewsFeed() {
                     <div className="flex gap-1">
                       {item.currencies && item.currencies.length > 0 && (
                         <>
-                          {item.currencies.map((currency) => (
+                          {item.currencies.map((currency, currencyIndex) => (
                             <span
-                              key={currency.code}
+                              key={currency.code + currencyIndex}
                               className={`text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-600`}
                             >
                               {currency.code}
