@@ -15,78 +15,86 @@ import {
 import axios from "axios";
 
 export async function RiskAnalysis(data: filterCriteria) {
-  console.log("started risk analysis for data ", data);
+  try {
+    console.log("started risk analysis for data ", data);
 
-  // -------- Get All Currencies --------
-  let currencies = 
-  await getAllCurrenciesCall(data.minPrice, data.maxPrice);
-  // COIN_SEARCH_RESPONSE.data as CurrencyDetails[];
-  if (!currencies) {
-    throw Error(
-      "No Currencies found for these parameters. Please adjust your requirements and try again."
+    // -------- Get All Currencies --------
+    let currencies = await getAllCurrenciesCall(data.minPrice, data.maxPrice);
+    // COIN_SEARCH_RESPONSE.data as CurrencyDetails[];
+    if (!currencies) {
+      throw Error(
+        "No Currencies found for these parameters. Please adjust your requirements and try again.",
+      );
+    }
+
+    const riskAnalyzer = await riskAnalyzerAICall(currencies);
+    if (!riskAnalyzer) {
+      throw Error("No risk analysis provided for selected coins.");
+    }
+    const riskAnalyzerCoins = riskAnalyzer.found_symbols.filter(
+      (risk) => data.risk === risk.Risk_Level,
     );
-  }
+    if (riskAnalyzerCoins?.length === 0) {
+      throw Error(
+        "No coins found for your selected risk level. Please re-adjust your risk level and try again.",
+      );
+    }
+    const riskData = riskAnalyzerCoins.map((risk) => ({
+      Risk_Value: risk.Risk_Value,
+      ...currencies.find((currency) => currency.symbol === risk.Symbol),
+    }));
 
-  const riskAnalyzer = await riskAnalyzerAICall(currencies);
-  if (!riskAnalyzer) {
-    throw Error("No risk analysis provided for selected coins.");
-  }
-  const riskAnalyzerCoins = riskAnalyzer.found_symbols.filter(
-    (risk) => data.risk === risk.Risk_Level
-  );
-  if (riskAnalyzerCoins?.length === 0) {
-    throw Error(
-      "No coins found for your selected risk level. Please re-adjust your risk level and try again."
+    let exitFrequencyResult = riskData?.map((i) => {
+      const { averageVolume, exitFrequency, growth, volatility } =
+        calculateExitFrequency(i as CurrencyDetails);
+      return {
+        ...i,
+        classification: exitFrequency,
+        volatility,
+        growth,
+        averageVolume,
+      };
+    });
+    if (!exitFrequencyResult) {
+      throw Error(
+        "No results found for your selected exit frequency. Please re-adjust your exit frequency and try again.",
+      );
+    }
+    const exitFrequencyCoinsResult = exitFrequencyResult.filter(
+      (currency) => currency.classification === data.exit,
     );
-  }
-  const riskData = riskAnalyzerCoins.map((risk) => ({
-    Risk_Value: risk.Risk_Value,
-    ...currencies.find((currency) => currency.symbol === risk.Symbol),
-  }));
+    if (exitFrequencyCoinsResult.length === 0) {
+      throw Error(
+        "No coins found for your selected exit frequency. Please re-adjust your exit frequency and try again.",
+      );
+    }
+    const result = exitFrequencyCoinsResult.map((frequency) => ({
+      ...riskData.find((c) => c.id?.toString() == frequency.id),
 
-  let exitFrequencyResult = riskData?.map((i) => {
-    const { averageVolume, exitFrequency, growth, volatility } =
-      calculateExitFrequency(i as CurrencyDetails);
+      volatility: frequency.volatility,
+      growth: frequency.growth,
+      avgVolume: frequency.averageVolume,
+      historicalData: convertQuoteToHistoricalData(frequency.quote!),
+    }));
+
+    // -------- Set User Values And Shuffle --------
+    const volume = (data.minPrice + data.maxPrice) / 2;
+    const risk = data.risk === "low" ? 8 : data.risk === "medium" ? 21 : 48;
     return {
-      ...i,
-      classification: exitFrequency,
-      volatility,
-      growth,
-      averageVolume,
+      currencies: result,
+      risk,
+      volume,
+      diversification: data.diversification,
+      depositAmount: data.amount,
+    } as ResultType;
+  } catch (serverError) {
+    console.warn("No coins founds for selected parameters.");
+    return {
+      error:
+        serverError?.toString() ||
+        "Unable to fetch coins for selected parameters. Please re-adjust your values and try again.",
     };
-  });
-  if (!exitFrequencyResult) {
-    throw Error(
-      "No results found for your selected exit frequency. Please re-adjust your exit frequency and try again."
-    );
   }
-  const exitFrequencyCoinsResult = exitFrequencyResult.filter(
-    (currency) => currency.classification === data.exit
-  );
-  if (exitFrequencyCoinsResult.length === 0) {
-    throw Error(
-      "No coins found for your selected exit frequency. Please re-adjust your exit frequency and try again."
-    );
-  }
-  const result = exitFrequencyCoinsResult.map((frequency) => ({
-    ...riskData.find((c) => c.id?.toString() == frequency.id),
-
-    volatility: frequency.volatility,
-    growth: frequency.growth,
-    avgVolume: frequency.averageVolume,
-    historicalData: convertQuoteToHistoricalData(frequency.quote!),
-  }));
-
-  // -------- Set User Values And Shuffle --------
-  const volume = (data.minPrice + data.maxPrice) / 2;
-  const risk = data.risk === "low" ? 8 : data.risk === "medium" ? 21 : 48;
-  return {
-    currencies: result,
-    risk,
-    volume,
-    diversification: data.diversification,
-    depositAmount: data.amount,
-  } as ResultType;
 }
 
 async function getAllCurrenciesCall(min: number, max: number) {
@@ -107,7 +115,7 @@ async function getAllCurrenciesCall(min: number, max: number) {
         headers: {
           "X-CMC_PRO_API_KEY": process.env.COIN_MARKET_CAP_API_KEY!,
         },
-      }
+      },
     );
     return response.data;
   };
@@ -139,11 +147,11 @@ async function getAllCurrenciesCall(min: number, max: number) {
 }
 
 async function riskAnalyzerAICall(
-  symbols: CurrencyDetails[]
+  symbols: CurrencyDetails[],
 ): Promise<riskAnalyzerAICallResponse | null> {
   console.log(
     "started risk analyzer for symbols ",
-    symbols?.map((s) => s.name)
+    symbols?.map((s) => s.name),
   );
   if (!symbols) {
     throw Error("Please provide symbols");
@@ -194,7 +202,10 @@ function calculateGrowth(prices: number[]) {
   return ((prices[prices.length - 1] - prices[0]) / prices[0]) * 100;
 }
 
-function calculateRisk(coinData: CurrencyDetails, maxVolume: number): { riskScore: number; riskCategory: string } {
+function calculateRisk(
+  coinData: CurrencyDetails,
+  maxVolume: number,
+): { riskScore: number; riskCategory: string } {
   const historicalData = convertQuoteToHistoricalData(coinData.quote);
 
   // 3.1.1 Volatility (Price Fluctuations)
@@ -206,9 +217,13 @@ function calculateRisk(coinData: CurrencyDetails, maxVolume: number): { riskScor
     Math.log(historicalData.today / historicalData.before90Days),
   ];
 
-  const meanLogReturn = logReturns.reduce((a, b) => a + b, 0) / logReturns.length;
-  const squaredDifferences = logReturns.map((value) => Math.pow(value - meanLogReturn, 2));
-  const variance = squaredDifferences.reduce((a, b) => a + b, 0) / logReturns.length;
+  const meanLogReturn =
+    logReturns.reduce((a, b) => a + b, 0) / logReturns.length;
+  const squaredDifferences = logReturns.map((value) =>
+    Math.pow(value - meanLogReturn, 2),
+  );
+  const variance =
+    squaredDifferences.reduce((a, b) => a + b, 0) / logReturns.length;
   const volatility = Math.sqrt(variance);
 
   // 3.1.2 Liquidity (Market Depth & Trading Volume)
@@ -218,7 +233,9 @@ function calculateRisk(coinData: CurrencyDetails, maxVolume: number): { riskScor
 
   // 3.1.3 Trend Stability (Directional Movement)
   // Simplified MACD calculation (replace with proper MACD if needed)
-  const macd = coinData.quote.USD.percent_change_7d - coinData.quote.USD.percent_change_30d;
+  const macd =
+    coinData.quote.USD.percent_change_7d -
+    coinData.quote.USD.percent_change_30d;
   const trendInstability = Math.abs(macd);
 
   // 3.1.4 Historical Drawdown (Maximum Loss Over Time)
@@ -246,19 +263,19 @@ function calculateRisk(coinData: CurrencyDetails, maxVolume: number): { riskScor
   const alpha3 = 0.25;
   const alpha4 = 0.25;
 
-//   Investment Strategy:
-//      - Short-Term Trading:
-//          For short-term trading, you might prioritize liquidity and volatility, as you need to quickly enter and exit positions.
-//          Example: alpha1 = 0.35, alpha2 = 0.35, alpha3 = 0.15, alpha4 = 0.15.
-//      - Long-Term Investing:
-//          For long-term investing, you might prioritize historical drawdown and trend stability, as you're more concerned about long-term sustainability.
-//          Example: alpha1 = 0.15, alpha2 = 0.15, alpha3 = 0.35, alpha4 = 0.35.
-//      - High-Risk, High-Reward:
-//          If you're willing to take on more risk for potentially higher returns, you might prioritize volatility and liquidity.
-//          Example: alpha1 = 0.4, alpha2 = 0.4, alpha3 = 0.1, alpha4 = 0.1.
-//      - Risk-Averse:
-//          If you are very risk adverse you will prioritize Drawdown and trend stability.
-//          Example: alpha1 = 0.1, alpha2 = 0.1, alpha3 = 0.4, alpha4 = 0.4.
+  //   Investment Strategy:
+  //      - Short-Term Trading:
+  //          For short-term trading, you might prioritize liquidity and volatility, as you need to quickly enter and exit positions.
+  //          Example: alpha1 = 0.35, alpha2 = 0.35, alpha3 = 0.15, alpha4 = 0.15.
+  //      - Long-Term Investing:
+  //          For long-term investing, you might prioritize historical drawdown and trend stability, as you're more concerned about long-term sustainability.
+  //          Example: alpha1 = 0.15, alpha2 = 0.15, alpha3 = 0.35, alpha4 = 0.35.
+  //      - High-Risk, High-Reward:
+  //          If you're willing to take on more risk for potentially higher returns, you might prioritize volatility and liquidity.
+  //          Example: alpha1 = 0.4, alpha2 = 0.4, alpha3 = 0.1, alpha4 = 0.1.
+  //      - Risk-Averse:
+  //          If you are very risk adverse you will prioritize Drawdown and trend stability.
+  //          Example: alpha1 = 0.1, alpha2 = 0.1, alpha3 = 0.4, alpha4 = 0.4.
 
   const normalizedVolatility = volatility; // Assume 0-1 scale after calculation
   const normalizedLiquidity = 1 - liquidityScore; // Invert liquidity
@@ -274,11 +291,11 @@ function calculateRisk(coinData: CurrencyDetails, maxVolume: number): { riskScor
   // 3.2.2 Classification
   let riskCategory: string;
   if (riskScore <= 0.3) {
-    riskCategory = 'low';
+    riskCategory = "low";
   } else if (riskScore <= 0.7) {
-    riskCategory = 'medium';
+    riskCategory = "medium";
   } else {
-    riskCategory = 'high';
+    riskCategory = "high";
   }
 
   return { riskScore, riskCategory };

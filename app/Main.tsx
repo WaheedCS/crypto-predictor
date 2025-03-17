@@ -18,6 +18,8 @@ interface InputFormType {
   amount: number;
 }
 
+type ErrorType = { error: string };
+
 export default function MainComponent() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -43,8 +45,14 @@ export default function MainComponent() {
         risk: risk as string,
       });
 
-      setResult(result);
+      if ((result as ErrorType).error) {
+        console.log("handled Error ", (result as ErrorType).error);
+        setError((result as ErrorType).error);
+        return;
+      }
+      setResult(result as ResultType);
     } catch (err) {
+      console.log("recieved error ", err);
       setError(
         err instanceof Error ? err.message : "An unexpected error occurred",
       );
