@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { formatPrice } from "@/lib/format-price";
 import { assignPercentagesResponse, HistoricalDataType } from "@/lib/types";
-import { ChartLine, Link2 } from "lucide-react";
+import { ChartLine, Link2, MessageCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import {
   Line,
@@ -25,6 +25,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "./ui/dialog";
+import { askChatGptChatBot } from "@/app/actions/chat-bot-actions";
 
 export default function ResultCard({
   result,
@@ -105,11 +106,12 @@ export default function ResultCard({
                     </p>
                   </div>
                 </td>
-                <td className="px-3 py-4 whitespace-nowrap text-sm max-md:hidden">
+                <td className="px-3 py-4 whitespace-nowrap text-sm max-md:hidden flex gap-4">
                   <HistoricalChart
                     data={product.historicalData}
                     slug={product.slug}
                   />
+                  <AiSummarySection result={product} />
                 </td>
                 {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         {getTrendIcon(row.trend)}
@@ -225,6 +227,38 @@ function HistoricalChart({
               </LineChart>
             </ResponsiveContainer>
           </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function AiSummarySection({ result }: { result: any }) {
+  const [pending, setPending] = useState(false);
+  const [response, setResponse] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  async function fetchSummary() {
+    setPending(true);
+    try {
+      const res = await askChatGptChatBot(JSON.stringify(result));
+      console.log(res);
+      setResponse(res);
+      setOpen(true);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <>
+      <button className="flex gap-2" onClick={() => fetchSummary()}>
+        <MessageCircle className="size-4" />{" "}
+        {pending && <Loader2 className="animate-spin size-4" />}
+      </button>
+      <Dialog open={open} onOpenChange={() => setOpen(false)}>
+        <DialogContent>
+          <DialogTitle>AI Summary</DialogTitle>
+          <div className="w-full h-full">{response}</div>
         </DialogContent>
       </Dialog>
     </>
