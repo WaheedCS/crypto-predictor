@@ -2,13 +2,14 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { AlertCircle, Grid, Loader2 } from "lucide-react";
+import { AlertCircle, Grid, Loader2, Infinity } from "lucide-react";
 import { useState } from "react";
 
 import { RiskAnalysis } from "@/app/actions/actions";
 import { TooltipComponent } from "@/components/ui/tooltip";
 import { ResultType } from "@/lib/types";
 import { ResultSection } from "../components/ResultSection";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface InputFormType {
   riskLevel: string;
@@ -110,6 +111,7 @@ function InputForm({
   const [amount, setAmount] = useState(0);
   const [riskLevel, setRiskLevel] = useState("medium");
   const [exitFrequency, setExitFrequency] = useState("regular");
+  const [noUpperLimit, setNoUpperLimit] = useState(false);
 
   const [error, setError] = useState(false);
   return (
@@ -130,7 +132,7 @@ function InputForm({
             formAction({
               amount,
               exitFrequency,
-              minMaxRange,
+              minMaxRange: noUpperLimit ? [minMaxRange.at(0)!, 0] : minMaxRange,
               rangeValue,
               riskLevel,
             });
@@ -252,25 +254,63 @@ function InputForm({
                 <span
                   className={`text-sm font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-700`}
                 >
-                  {`$${minMaxRange[0].toLocaleString()} - $${minMaxRange[1].toLocaleString()}`}
+                  $ {minMaxRange[0]?.toLocaleString()} - ${" "}
+                  {noUpperLimit ? (
+                    <Infinity className="inline p-0 m-0 size-5" />
+                  ) : (
+                    minMaxRange[1]?.toLocaleString()
+                  )}
+                  {/* {`$${minMaxRange[0].toLocaleString()} - $${noUpperLimit ? <Infinity /> : minMaxRange[1].toLocaleString()}`} */}
                 </span>
               </div>
 
               {/* Using shadcn/ui Slider for range */}
               <div className="px-2 py-4">
-                <Slider
-                  max={1000000}
-                  min={10000}
-                  step={5000}
-                  defaultValue={[50000, 150000]}
-                  minStepsBetweenThumbs={2}
-                  onValueChange={(value) => {
-                    setMinMaxRange([value[0], value[1]]);
-                  }}
-                />
+                {noUpperLimit ? (
+                  <Slider
+                    value={[minMaxRange.at(0)!]}
+                    max={1000000}
+                    min={10000}
+                    step={5000}
+                    onValueChange={(value) =>
+                      setMinMaxRange([value[0], value[1]])
+                    }
+                  />
+                ) : (
+                  <Slider
+                    max={1000000}
+                    min={10000}
+                    step={5000}
+                    // defaultValue={[50000, 150000]}
+                    value={minMaxRange}
+                    minStepsBetweenThumbs={2}
+                    onValueChange={(value) => {
+                      setMinMaxRange([value[0], value[1]]);
+                    }}
+                  />
+                )}
                 <div className="flex justify-between text-xs mt-1 text-opacity-70">
                   <span>$10K</span>
                   <span>$1M</span>
+                </div>
+                <div className="flex items-center space-x-2 w-full justify-end">
+                  <Checkbox
+                    id="no-upper"
+                    checked={noUpperLimit}
+                    onCheckedChange={(checked) => {
+                      setNoUpperLimit(checked as boolean);
+                      setMinMaxRange((prev) => [
+                        prev?.at(0)!,
+                        prev?.at(1) || 1000000,
+                      ]);
+                    }}
+                  />
+                  <label
+                    htmlFor="no-upper"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    No Upper Limit to Max Volume
+                  </label>
                 </div>
               </div>
             </div>

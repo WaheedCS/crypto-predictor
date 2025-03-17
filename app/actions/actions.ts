@@ -103,14 +103,16 @@ async function getAllCurrenciesCall(min: number, max: number) {
   let start = 1;
   let loops = 0;
 
-  if (!min || !max) {
+  if (!min) {
     throw Error("Please provide min and max values");
   }
+
+  console.log("max limit is ", max, " should get higher ", max === 0);
 
   // Fetch Currency Data
   const fetchCurrencies = async (start: number, min: number, max: number) => {
     const response = await axios.get(
-      `https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?volume_24h_min=${min}&volume_24h_max=${max}&limit=5000&start=${start}`,
+      `https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?volume_24h_min=${min}${max ? `&volume_24h_max=${max}` : ""}&limit=5000&start=${start}`,
       {
         headers: {
           "X-CMC_PRO_API_KEY": process.env.COIN_MARKET_CAP_API_KEY!,
