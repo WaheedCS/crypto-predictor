@@ -11,7 +11,6 @@ import {
 } from "recharts";
 import { assignPercentages } from "@/app/actions/chart-actions";
 import { ChatBot } from "@/components/ChatBot";
-import PredictionChart from "@/components/PredictionChart";
 import ResultCard from "@/components/ResultsCard";
 import { colors } from "@/lib/colors";
 import { ResultType } from "@/lib/types";
@@ -193,7 +192,6 @@ export function ResultSection({ result }: { result: ResultType }) {
       </div>
       <ResultCard result={sortedData} />
       <ChatBot result={result} />
-      <PredictionChart />
     </>
   );
 }

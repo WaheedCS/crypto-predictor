@@ -10,6 +10,7 @@ import { TooltipComponent } from "@/components/ui/tooltip";
 import { ResultType } from "@/lib/types";
 import { ResultSection } from "../components/ResultSection";
 import { Checkbox } from "@/components/ui/checkbox";
+import PredictionChart from "@/components/PredictionChart";
 
 interface InputFormType {
   riskLevel: string;
@@ -63,9 +64,10 @@ export default function MainComponent() {
   }
 
   return (
-    <div className="lg:col-span-2 space-y-6">
+    <div className="lg:col-span-3 space-y-6">
       {/* Input Card */}
       <InputForm isPending={loading} formAction={handleFormSubmit} />
+      <PredictionChart />
 
       {/* Visualization Section */}
       {error && (
