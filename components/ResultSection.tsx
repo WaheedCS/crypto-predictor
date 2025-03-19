@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "recharts";
 import { assignPercentages } from "@/app/actions/chart-actions";
-import { ChatBot } from "@/components/ChatBot";
+// import { ChatBot } from "@/components/ChatBot";
 import ResultCard from "@/components/ResultsCard";
 import { colors } from "@/lib/colors";
 import { ResultType } from "@/lib/types";
@@ -191,7 +191,7 @@ export function ResultSection({ result }: { result: ResultType }) {
         </div>
       </div>
       <ResultCard result={sortedData} />
-      <ChatBot result={result} />
+      {/* <ChatBot result={result} /> */}
     </>
   );
 }
