@@ -1,5 +1,9 @@
 "use client";
-import { fetchPreviousPredictionsList } from "@/app/actions/prediction-actions";
+import {
+  fetchCoinForecasting,
+  fetchHtmlContent,
+  fetchPreviousPredictionsList,
+} from "@/app/actions/prediction-actions";
 import HtmlChartViewer from "@/components/HtmlChartViewer";
 import {
   Card,
@@ -24,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { PriceData } from "@/lib/types";
 import { Label } from "@radix-ui/react-label";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   CartesianGrid,
@@ -35,53 +40,12 @@ import {
   YAxis,
 } from "recharts";
 
-// const CURRENCIES = ["BTC-USD", "BNB-USD", "DOGE-USD", "SOL-USD"];
+const CURRENCIES = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "DOGEUSDT", "LINKUSDT"];
 
 export default function PredictionChart() {
-  const [currencies, setCurrencies] =
-    useState<{ name: string; url: string; path: string }[]>();
-  const [selectedCurrency, setSelectedCurrency] = useState(currencies?.at(0));
-
-  const [priceData, setPriceData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function get() {
-      const result = await fetchPreviousPredictionsList();
-      setCurrencies(result);
-    }
-    get();
-  }, []);
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     setLoading(true);
-  //     setError(null);
-
-  //     try {
-  //       if (!selectedCurrency) throw Error("Please select a currency");
-  //       const result = await callPrediction(selectedCurrency);
-  //       console.log("result ", result);
-
-  //       if ((result as any).error) {
-  //         throw Error((result as any).error);
-  //       }
-  //       if (result) {
-  //         setPriceData(result);
-  //       } else {
-  //         setError(result || "Failed to fetch price data");
-  //       }
-  //     } catch (err) {
-  //       setError("An unexpected error occurred. " + err?.toString());
-  //       console.error(err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-
-  //   fetchData();
-  // }, [selectedCurrency]);
+  const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>(
+    undefined
+  );
 
   return (
     <>
@@ -89,10 +53,8 @@ export default function PredictionChart() {
         <div className="mx-auto max-w-md flex gap-4 items-center">
           <Label>Selected Currency Forecast</Label>
           <Select
-            value={selectedCurrency?.name}
-            onValueChange={(value) =>
-              setSelectedCurrency(currencies?.find((c) => c.name === value))
-            }
+            value={undefined}
+            onValueChange={(value) => setSelectedCurrency(value)}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select a Currency" />
@@ -100,9 +62,9 @@ export default function PredictionChart() {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Currencies</SelectLabel>
-                {currencies?.map((currency, index) => (
-                  <SelectItem key={index} value={currency?.name}>
-                    {currency?.name?.replace("USDT", "")}
+                {CURRENCIES?.map((currency, index) => (
+                  <SelectItem key={index} value={currency}>
+                    {currency?.replace("USDT", "")}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -115,14 +77,89 @@ export default function PredictionChart() {
           loading={loading}
           priceData={priceData}
         /> */}
-        {/* {selectedCurrency?.url && <iframe src={selectedCurrency?.path} />} */}
-        {selectedCurrency?.path && (
+        {/* {selectedCurrency?.path && (
           <HtmlChartViewer url={selectedCurrency?.path} />
+        )} */}
+        {selectedCurrency && (
+          <CurrencyForecastSection currency={selectedCurrency} />
         )}
       </Card>
     </>
   );
 }
+
+function CurrencyForecastSection({ currency }: { currency: string }) {
+  const [URL, setURL] = useState<string | null>(null);
+  const [ERROR, setERROR] = useState<string | null>(null);
+  async function fetchCoinForecast() {
+    try {
+      setERROR(null);
+      const data = await fetchCoinForecasting(currency);
+      if (!data.url) {
+        throw Error("No URL found");
+      }
+      setURL(data.url);
+    } catch (e) {
+      setERROR(String(e));
+    }
+  }
+
+  useEffect(() => {
+    fetchCoinForecast();
+  }, [currency]);
+
+  return <>{URL && <FetchAndDisplayHTML url={URL} />}</>;
+}
+
+const FetchAndDisplayHTML = ({ url }: { url: string }) => {
+  const [htmlContent, setHtmlContent] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchHtml = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const html = await fetchHtmlContent(url);
+        setHtmlContent(html);
+      } catch (err) {
+        setError(String(err));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHtml();
+  }, [url]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8 bg-gray-100 border rounded-md w-full h-full">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <span className="ml-2 text-gray-600">Loading Forecast...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 text-white bg-red-500 border rounded-md w-full h-auto">
+        <h3 className="mb-2 text-lg font-semibold">Error Loading Content</h3>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <iframe
+      title="HTML Content"
+      srcDoc={htmlContent}
+      style={{ width: "100%", height: "500px", border: "none" }}
+      className="min-h-[850px]"
+    />
+  );
+};
 
 function ResultSection({
   loading,

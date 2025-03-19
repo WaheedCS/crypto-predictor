@@ -42,7 +42,37 @@ export async function fetchPreviousPredictionsList() {
   }));
   console.log(
     "blobs found: ",
-    previousPredictions?.map((i) => i.name),
+    previousPredictions?.map((i) => i.name)
   );
   return previousPredictions;
+}
+
+export async function fetchCoinForecasting(currency: string) {
+  try {
+    const AI_ENDPOINT = process.env.NEXT_PUBLIC_PORTFOLIO_OPTIMIZER_AI_ROUTE;
+    if (!AI_ENDPOINT) {
+      throw Error("NO AI ROUTE FOUND");
+    }
+    const { data } = await axios(
+      AI_ENDPOINT +
+        "/CoinsForecasting?currencies=" +
+        currency +
+        "&display=false"
+    );
+    return data;
+  } catch (e) {
+    console.error("Error fetching coin forecast ", e);
+    return null;
+  }
+}
+
+export async function fetchHtmlContent(url: string) {
+  const AI_ENDPOINT = process.env.NEXT_PUBLIC_PORTFOLIO_OPTIMIZER_AI_ROUTE;
+  const response = await fetch(AI_ENDPOINT+url);
+  // const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  const html = await response.text();
+  return html;
 }
