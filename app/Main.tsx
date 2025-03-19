@@ -67,8 +67,7 @@ export default function MainComponent() {
     <div className="lg:col-span-3 space-y-6">
       {/* Input Card */}
       <InputForm isPending={loading} formAction={handleFormSubmit} />
-      <PredictionChart />
-
+      
       {/* Visualization Section */}
       {error && (
         <Alert variant="destructive" className="w-full">
@@ -97,6 +96,7 @@ export default function MainComponent() {
           <ResultSection result={result} />
         </>
       )}
+      <PredictionChart />
     </div>
   );
 }
